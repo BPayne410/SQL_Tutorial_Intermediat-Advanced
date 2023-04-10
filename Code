@@ -1,0 +1,269 @@
+/*
+Today's Topic: Updateing/Deleting Data
+*/
+
+
+--UPDATE EmployeeDemographics
+--SET EmployeeID = 1012
+--WHERE FirstName = 'Holly' AND LastName = 'Flax'
+
+--UPDATE EmployeeDemographics
+--SET Age = 31, Gender = 'Female'
+--WHERE FirstName = 'Holly' AND LastName = 'Flax'
+
+--SELECT * 
+--FROM EmployeeDemographics
+
+--DELETE FROM EmployeeDemographics
+--WHERE EmployeeID = 1005
+
+--SELECT * 
+--FROM EmployeeDemographics
+
+/*
+Today's Topic: Aliasing
+*/
+
+--SELECT FirstName + ' ' + LastName AS FullName
+--FROM EmployeeDemographics
+
+--SELECT Avg(Age) as AVGAge
+--FROM EmployeeDemographics
+
+--SELECT Demo.EmployeeID, Sal.Salary
+--FROM [SQL Tutorial].[dbo].[EmployeeDemographics] AS Demo
+--JOIN [SQL tutorial].[dbo].[EmployeeSalary] AS Sal
+--	ON Demo.EmployeeID = Sal.EmployeeID
+
+--SELECT Demo.EmployeeID, Demo.FirstName, Demo.FirstName, Sal.JobTitle, Ware.Age
+--FROM [SQL tutorial].[dbo].[EmployeeDemographics] AS Demo
+--LEFT JOIN [SQL tutorial].[dbo].EmployeeSalary AS Sal
+--	ON Demo.EmployeeID = Sal.EmployeeID
+--LEFT JOIN [SQL tutorial].[dbo].WareHouseEmployeeDemographics AS Ware
+--	ON Demo.EmployeeID = Ware.EmployeeID
+
+/*
+Today's Topic: Partition By
+*/
+
+--SELECT *
+--FROM EmployeeDemographics dem
+--JOIN EmployeeSalary sal
+--	ON dem.EmployeeID = sal.EmployeeID
+
+--SELECT FirstName, LastName, Gender, Salary,
+--	COUNT(Gender) OVER (PARTITION BY Gender) as TotalGender
+--FROM EmployeeDemographics dem
+--JOIN EmployeeSalary sal
+--	ON dem.EmployeeID = sal.EmployeeID
+
+--SELECT FirstName, LastName, Gender, Salary,
+--	COUNT(Gender) 
+--FROM EmployeeDemographics dem
+--JOIN EmployeeSalary sal
+--	ON dem.EmployeeID = sal.EmployeeID
+--GROUP BY FirstName, LastName, Gender, Salary
+/* Group By doesn't allow you to pull multiple columns and a query
+
+
+Today's Topic: CTEs
+*/ 
+
+--WITH CTE_Employee as 
+--(SELECT FirstName, LastName, Gender, Salary,
+--	COUNT(gender) OVER (PARTITION BY Gender) as TotalGender,
+--	AVG(Salary) OVER (PARTITION BY Gender) as AvgSalary
+--FROM EmployeeDemographics emp
+--JOIN EmployeeSalary sal
+--	ON emp.EmployeeID = sal.EmployeeID
+--WHERE Salary > '4500'
+--)
+--SELECT FirstName, AvgSalary FROM CTE_Employee
+
+/*
+Today's Topic: Temp Tables
+*/
+
+--CREATE TABLE #temp_Employee (
+--EmployeeID int, 
+--JobTitle varchar(100),
+--Salary int
+--)
+
+--SELECT *
+--FROM #temp_Employee
+
+----INSERT INTO #temp_Employee Values (
+----'1001', 'HR', '45000'
+----)
+
+--INSERT INTO #temp_Employee
+--SELECT *
+--FROM EmployeeSalary
+
+--DROP TABLE IF EXISTS #TEMP_Employee2
+--CREATE TABLE #TEMP_Employee2 (
+--JobTitle varchar(50),
+--EmployeesPerJob int,
+--AvgAge int,
+--AvgSalary int)
+
+
+--INSERT INTO #TEMP_Employee2
+--SELECT JobTitle, Count(JobTitle), Avg(Age), AVG(Salary)
+--FROM EmployeeDemographics emp
+--JOIN EmployeeSalary sal
+--	ON emp.EmployeeID = sal.EmployeeID
+--GROUP BY JobTitle 
+
+--SELECT *
+--FROM #TEMP_Employee2
+
+/*
+Today's Topic: String Functions - TRIM, LTRIM, RTRIM, REPLACE, SUBSTRING, UPPER, LOWER
+*/
+
+
+--CREATE TABLE EmployeeErrors (
+--EmployeeID varchar(50)
+--,FirstName varchar(50)
+--,LastName varchar(50)
+--)
+
+--INSERT INTO EmployeeErrors VALUES
+--('1001   ', 'Jimbo', 'Halbert')
+--,('   1002', 'Pamela', 'Beasely')
+--,('1005', 'TOby', 'Flenderson - Fired')
+
+--SELECT *
+--FROM EmployeeErrors
+
+--Using TRIM, LTRIM, RTRIM
+
+--SELECT EmployeeID, TRIM(EmployeeID) as IDTRIM
+--FROM EmployeeErrors 
+----removes spaces from both sides of input 
+--SELECT EmployeeID, LTRIM(EmployeeID) as IDTRIM
+--FROM EmployeeErrors 
+----removes spaces from left side of data
+--SELECT EmployeeID, RTRIM(EmployeeID) as IDTRIM
+--FROM EmployeeErrors 
+----removes spaces from right side of data
+
+--Using REPLACE
+
+--SELECT LastName, REPLACE(LastName, '- Fired', '') as LastNameFixed
+--FROM EmployeeErrors 
+
+----Removes - Fired from Flenderson's name
+
+--Using Substring
+
+--SELECT SUBSTRING(FirstName, 4,3) 
+--FROM EmployeeErrors 
+----goes to first specified number (4) and gives second specified number of digits (3)
+
+
+--SELECT *
+--FROM EmployeeDemographics
+
+--INSERT INTO EmployeeDemographics VALUES
+--(1005, 'Toby', 'Flenderson', 32, 'Male')
+
+
+--SELECT SUBSTRING(err.FirstName,1,3), SUBSTRING(dem.FirstName,1,3)
+--FROM EmployeeErrors err
+--JOIN EmployeeDemographics dem
+--	ON SUBSTRING(err.FirstName,1,3) = SUBSTRING(dem.FirstName,1,3)
+
+--	--Fuzzy matching
+
+--Using UPPER and LOWER
+
+--SELECT FirstName, LOWER(FirstName)
+--FROM EmployeeErrors 
+
+--SELECT FirstName, UPPER(FirstName)
+--FROM EmployeeErrors
+
+/*
+Today's Topic: Stored Procedures
+*/
+
+--a group of SQL statements created and stored in database
+
+--CREATE PROCEDURE Test
+--AS 
+--SELECT * 
+--FROM EmployeeDemographics
+
+--EXEC TEST
+
+--CREATE PROCEDURE Temp_Employee
+--AS
+--DROP TABLE IF EXISTS #temp_employee
+--Create table #temp_employee (
+--JobTitle varchar(100),
+--EmployeesPerJob int ,
+--AvgAge int,
+--AvgSalary int
+--)
+
+
+--Insert into #temp_employee
+--SELECT JobTitle, Count(JobTitle), Avg(Age), AVG(salary)
+--FROM [SQL tutorial]..EmployeeDemographics emp
+--JOIN [SQL tutorial]..EmployeeSalary sal
+--	ON emp.EmployeeID = sal.EmployeeID
+--group by JobTitle
+
+--Select * 
+--From #temp_employee
+--GO;
+
+--EXEC Temp_Employee @JobTitle = 'Salesman'
+--exec Temp_Employee @jobtitle = 'Accountant'
+
+/*
+Today's Topic: Subqueries (in the SELECT, FROM, and WHERE Statement)
+*/
+
+SELECT *
+FROM EmployeeSalary
+
+-- Subquery in SELECT
+
+SELECT EmployeeID, Salary, (SELECT AVG(Salary) FROM EmployeeSalary) AS AllAvgSalary
+FROM EmployeeSalary 
+
+
+--How to do it with PARTITION BY
+
+SELECT EmployeeID, Salary, AVG(Salary) over () as AllAvgSalary
+FROM EmployeeSalary
+
+
+--Why GROUP BY doesn't work
+
+SELECT EmployeeID, Salary, AVG(Salary) as AllAvgSalary
+FROM EmployeeSalary
+GROUP BY EmployeeID, Salary
+ORDER BY 1,2
+
+--Doesn't work because it will only average each row
+
+
+--Subquery in FROM
+
+SELECT a.EmployeeID, AllAvgSalary
+FROM (SELECT EmployeeID, Salary, AVG(Salary) over () as AllAvgSalary
+	  FROM EmployeeSalary) a
+
+--Subquery in WHERE
+
+SELECT EmployeeID, JobTitle, Salary
+FROM EmployeeSalary
+WHERE EmployeeID in (
+		SELECT EmployeeID
+		FROM EmployeeDemographics
+		WHERE Age > 30)
